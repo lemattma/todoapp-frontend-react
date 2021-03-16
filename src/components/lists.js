@@ -1,20 +1,30 @@
-import React from 'react'
+import React, { Component } from 'react'
+import { Link } from "react-router-dom";
 
-const Lists = ({ lists }) => {
-    return (
-    <div>
-        <center><h1>Task Lists</h1></center>
-        {lists.map((list) => (
-            <div class="card">
-                <div class="card-body">
-                <h5 class="card-title">{list.name}</h5>
-                <h6 class="card-subtitle mb-2 text-muted">No tasks yet</h6>
-                <p class="card-text">Add task +</p>
+class Lists extends Component {
+    state = { lists: [] }
+
+    componentDidMount() {
+        fetch('http://localhost:8080/lists')
+            .then(res => res.json())
+            .then((data) => {
+                this.setState({ lists: data })
+            })
+            .catch(console.log)
+    }
+
+    render(){
+        return (
+            <div>
+                <h1 class="display-6 mb-5">Task Lists</h1>
+                <div class="list-group">
+                    {this.state.lists.map((list) => (
+                        <Link to={`/lists/${list.id}`} class="list-group-item list-group-item-action">{list.name}</Link>
+                    ))}
                 </div>
             </div>
-        ))}
-    </div>
-    )
+        )
+    }
 };
 
 export default Lists

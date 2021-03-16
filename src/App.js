@@ -1,23 +1,21 @@
 import React, { Component } from 'react';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route
+} from "react-router-dom";
 import Lists from './components/lists';
+import List from './components/list';
 
 class App extends Component {
-  state = {
-    lists: []
-  }
-
-  componentDidMount() {
-    fetch('http://localhost:8080/lists')
-    .then(res => res.json())
-    .then((data) => {
-      this.setState({ lists: data })
-    })
-    .catch(console.log)
-  }
-
   render() {
     return (
-      <Lists lists={this.state.lists} />
+      <Router>
+        <Switch>
+          <Route exact path="/" component={Lists} />
+          <Route exact path="/lists/:id" component={List} />
+        </Switch>
+      </Router>
     );
   }
 }

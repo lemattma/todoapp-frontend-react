@@ -47,7 +47,7 @@ class Lists extends Component {
                 </div>
 
                 <input
-                    type="email"
+                    type="text"
                     class="form-control form-control-lg mt-5"
                     onKeyPress={this.newListEnter.bind(this)}
                     placeholder="Enter new list"

@@ -1,39 +1,32 @@
 import React, { Component } from 'react'
 import { Link } from "react-router-dom";
+import { createList, getLists } from '../clients/api';
 
 class Lists extends Component {
     state = {
         lists: []
     }
 
-    componentDidMount() {
-        this.loadLists()
+    constructor(props) {
+        super(props);
+        this.loadData = this.loadData.bind(this);
     }
 
-    newListEnter(event) {
+    componentDidMount() { this.loadData() }
+
+    newListHandler(event) {
         if (event.code === 'Enter' && event.target.value !== '') {
-            this.saveNewList(event.target.value);
+            createList({
+                name: event.target.value
+            }).then(this.loadData);
         }
     }
 
-    saveNewList(name) {
-        fetch('http://localhost:8080/lists', {
-            method: 'POST',
-            headers: {'Content-Type':'application/json'},
-            body: JSON.stringify({ name: name })
+    loadData() {
+        getLists().then((data) => {
+            this.listName.value = '';
+            this.setState({ lists: data });
         })
-        .then(() => this.loadLists())
-        .catch(console.log)
-    }
-
-    loadLists() {
-        fetch('http://localhost:8080/lists')
-            .then(res => res.json())
-            .then((data) => {
-                this.listName.value = '';
-                this.setState({ lists: data });
-            })
-            .catch(console.log)
     }
 
     render(){
@@ -49,7 +42,7 @@ class Lists extends Component {
                 <input
                     type="text"
                     class="form-control form-control-lg mt-5"
-                    onKeyPress={this.newListEnter.bind(this)}
+                    onKeyPress={this.newListHandler.bind(this)}
                     placeholder="Enter new list"
                     ref={(el) => (this.listName = el)}
                 />

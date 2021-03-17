@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Link, withRouter } from "react-router-dom";
+import { getListById, createTask } from "../clients/api";
 
 class List  extends Component {
 
@@ -12,12 +13,15 @@ class List  extends Component {
 
     constructor(props) {
         super(props);
+
         this.state.currentListId = this.props.match.params.id;
+
         this.createTaskHandler = this.createTaskHandler.bind(this);
-      }
+        this.loadData = this.loadData.bind(this);
+    }
 
     componentDidMount() {
-        this.loadListAndTasks();
+        this.loadData();
     }
 
     createTaskHandler(event) {
@@ -27,26 +31,18 @@ class List  extends Component {
     }
 
     saveNewTask(name) {
-        fetch(`${process.env.REACT_APP_API_URL}/tasks`, {
-            method: 'POST',
-            headers: {'Content-Type':'application/json'},
-            body: JSON.stringify({
-                name: name,
-                list_id: this.state.currentListId
-            })
-        })
-        .then(() => this.loadListAndTasks())
-        .catch(console.log)
+        createTask({
+            name: name,
+            list_id: this.state.currentListId
+        }).then(this.loadData)
     }
 
-    loadListAndTasks() {
-        fetch(`${process.env.REACT_APP_API_URL}/lists/${this.state.currentListId}`)
-            .then(res => res.json())
+    loadData() {
+        getListById(this.state.currentListId)
             .then((data) => {
                 this.taskName.value = '';
                 this.setState({ list: data })
             })
-            .catch(console.log)
     }
 
     render() {

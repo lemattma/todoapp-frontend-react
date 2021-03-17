@@ -1,43 +1,79 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 import { Link, withRouter } from "react-router-dom";
 
 class List  extends Component {
 
     state = {
-        list: {},
-        tasks: []
+        currentListId: 0,
+        list: {
+            tasks: []
+        }
     }
 
-    componentDidMount() {
-        const id = this.props.match.params.id;
+    constructor(props) {
+        super(props);
+        this.state.currentListId = this.props.match.params.id;
+        this.createTaskHandler = this.createTaskHandler.bind(this);
+      }
 
-        fetch(`http://localhost:8080/lists/${id}`)
+    componentDidMount() {
+        this.loadListAndTasks();
+    }
+
+    createTaskHandler(event) {
+        if (event.code === 'Enter' && event.target.value !== '') {
+            this.saveNewTask(event.target.value);
+        }
+    }
+
+    saveNewTask(name) {
+        fetch('http://localhost:8080/tasks', {
+            method: 'POST',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({
+                name: name,
+                list_id: this.state.currentListId
+            })
+        })
+        .then(() => this.loadListAndTasks())
+        .catch(console.log)
+    }
+
+    loadListAndTasks() {
+        fetch(`http://localhost:8080/lists/${this.state.currentListId}`)
             .then(res => res.json())
             .then((data) => {
-                this.setState({
-                    list: data,
-                    tasks: data.tasks
-                })
+                this.taskName.value = '';
+                this.setState({ list: data })
             })
             .catch(console.log)
     }
 
     render() {
         return (
-            <div>
+            <>
                 <h1 class="display-6">
                     {this.state.list.name}
                     <Link to="/" class="btn btn-sm float-end btn-primary">Back</Link>
                 </h1>
+
                 <div class="list-group mt-5">
-                    {this.state.tasks.map((task) => (
+                    {this.state.list.tasks.map((task) => (
                         <div class="list-group-item">
                             <input type="checkbox" class=""/>
                             <span class="ps-3">{task.name}</span>
                         </div>
                     ))}
                 </div>
-            </div>
+
+                <input
+                    type="text"
+                    class="form-control form-control-lg mt-5"
+                    onKeyPress={this.createTaskHandler}
+                    placeholder="Enter new task"
+                    ref={(el) => (this.taskName = el)}
+                />
+            </>
         )
     }
 }

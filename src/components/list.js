@@ -27,7 +27,7 @@ class List  extends Component {
     }
 
     saveNewTask(name) {
-        fetch('http://localhost:8080/tasks', {
+        fetch(`${process.env.REACT_APP_API_URL}/tasks`, {
             method: 'POST',
             headers: {'Content-Type':'application/json'},
             body: JSON.stringify({
@@ -40,7 +40,7 @@ class List  extends Component {
     }
 
     loadListAndTasks() {
-        fetch(`http://localhost:8080/lists/${this.state.currentListId}`)
+        fetch(`${process.env.REACT_APP_API_URL}/lists/${this.state.currentListId}`)
             .then(res => res.json())
             .then((data) => {
                 this.taskName.value = '';

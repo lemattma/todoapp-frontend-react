@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Link, withRouter } from "react-router-dom";
-import { getListById, createTask } from "../clients/api";
+import { getListById, createTask, deleteTask } from "../clients/api";
 
 class List  extends Component {
 
@@ -17,6 +17,7 @@ class List  extends Component {
         this.state.currentListId = this.props.match.params.id;
 
         this.createTaskHandler = this.createTaskHandler.bind(this);
+        this.deleteTaskHandler = this.deleteTaskHandler.bind(this);
         this.loadData = this.loadData.bind(this);
     }
 
@@ -28,6 +29,11 @@ class List  extends Component {
         if (event.code === 'Enter' && event.target.value !== '') {
             this.saveNewTask(event.target.value);
         }
+    }
+
+    deleteTaskHandler(event) {
+        event.preventDefault();
+        deleteTask(event.target.id).then(this.loadData)
     }
 
     saveNewTask(name) {
@@ -58,6 +64,7 @@ class List  extends Component {
                         <div class="list-group-item">
                             <input type="checkbox" class=""/>
                             <span class="ps-3">{task.name}</span>
+                            <button class="btn btn-xs btn-danger float-end align-middle" id={task.id} onClick={this.deleteTaskHandler}>Delete</button>
                         </div>
                     ))}
                 </div>

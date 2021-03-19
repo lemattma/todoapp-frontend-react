@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Link } from "react-router-dom";
-import { createList, getLists } from '../clients/api';
+import { createList, getLists, deleteList } from '../clients/api';
 
 class Lists extends Component {
     state = {
@@ -10,6 +10,7 @@ class Lists extends Component {
     constructor(props) {
         super(props);
         this.loadData = this.loadData.bind(this);
+        this.deleteListHandler = this.deleteListHandler.bind(this);
     }
 
     componentDidMount() { this.loadData() }
@@ -20,6 +21,11 @@ class Lists extends Component {
                 name: event.target.value
             }).then(this.loadData);
         }
+    }
+
+    deleteListHandler(event) {
+        event.preventDefault();
+        deleteList(event.target.id).then(this.loadData)
     }
 
     loadData() {
@@ -35,7 +41,12 @@ class Lists extends Component {
                 <h1 class="display-6 mb-5">Task Lists</h1>
                 <div class="list-group">
                     {this.state.lists.map((list) => (
-                        <Link to={`/lists/${list.id}`} class="list-group-item list-group-item-action">{list.name}</Link>
+                        <>
+                            <Link to={`/lists/${list.id}`} class="list-group-item list-group-item-action">
+                                {list.name}
+                                <button class="btn btn-xs btn-danger float-end align-middle" id={list.id} onClick={this.deleteListHandler}>Delete</button>
+                            </Link>
+                        </>
                     ))}
                 </div>
 
